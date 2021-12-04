@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios'
+import Login from './auth/Login';
 import Registration from './auth/Registration';
 
 class Home extends Component {
@@ -19,6 +21,7 @@ class Home extends Component {
         <h1>This is the HOME page</h1>
         <h1>Status: {this.props.loggedInStatus}</h1>
         <Registration handleSuccessfulAuth={this.handleSuccessfulAuth} />
+        <Login handleSuccessfulAuth={this.handleSuccessfulAuth} />
       </div>
     );
   }
