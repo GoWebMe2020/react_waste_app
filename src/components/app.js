@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import Home from './Home';
 import Navbar from './navbar/Navbar'
 import Login from './auth/Login';
+import Register from './auth/Registration';
 
 export default class App extends Component {
   constructor() {
@@ -15,8 +16,11 @@ export default class App extends Component {
       user: {}
     }
 
+    this.URL = "http://localhost:3001"
+
     this.handleLogin = this.handleLogin.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
+    this.handleSuccessfulAuth = this.handleSuccessfulAuth.bind(this);
   }
 
   componentDidMount() {
@@ -28,6 +32,16 @@ export default class App extends Component {
       loggedInStatus: "LOGGED_IN",
       user: data.user
     })
+  }
+
+  handleSuccessfulAuth(data) {
+    this.handleLogin(data);
+    console.log(this.state.user)
+    if (this.state.loggedInStatus === "LOGGED_IN" && this.state.user) {
+      window.location.pathname = '/dashboard'
+    } else {
+      window.location.pathname = '/login'
+    }
   }
 
   handleLogout() {
@@ -63,12 +77,17 @@ export default class App extends Component {
         <Router>
           <Navbar
             handleLogout={this.handleLogout}
+            URL={this.URL}
           />
           <Switch>
             <Route
               exact path={"/dashboard"}
               render={props => (
-                <Dashboard {... props} loggedInStatus={this.state.loggedInStatus} />
+                <Dashboard
+                  {... props}
+                    loggedInStatus={this.state.loggedInStatus}
+                    URL={this.URL}
+                />
               )}
             />
             <Route
@@ -76,8 +95,20 @@ export default class App extends Component {
               render={props => (
                 <Login
                   {... props}
-                  handleLogin={this.handleLogin}
+                  handleSuccessfulAuth={this.handleSuccessfulAuth}
                   loggedInStatus={this.state.loggedInStatus}
+                  URL={this.URL}
+                />
+              )}
+            />
+            <Route
+              exact path={"/register"}
+              render={props => (
+                <Register
+                  {... props}
+                  handleSuccessfulAuth={this.handleSuccessfulAuth}
+                  loggedInStatus={this.state.loggedInStatus}
+                  URL={this.URL}
                 />
               )}
             />

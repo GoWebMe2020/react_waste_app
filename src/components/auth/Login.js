@@ -8,12 +8,12 @@ class Login extends Component {
     this.state = {
       email: "",
       password: "",
-      loginErrors: ""
+      loginErrors: "",
+      registrationErrors: ""
     }
 
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
-    this.handleSuccessfulAuth = this.handleSuccessfulAuth.bind(this);
   }
 
   handleSubmit(event) {
@@ -21,7 +21,7 @@ class Login extends Component {
       email,
       password
     } = this.state;
-    axios.post("http://localhost:3001/sessions", {
+    axios.post(`${this.props.URL}/sessions`, {
       user: {
         email: email,
         password: password
@@ -30,27 +30,25 @@ class Login extends Component {
       { withCredentials: true }
     ).then(response => {
       if (response.data.logged_in) {
-        this.handleSuccessfulAuth(response.data);
+        this.props.handleSuccessfulAuth(response.data);
       }
     }).catch(error => {
       console.log("Login Error", error);
     })
     event.preventDefault()
   }
+
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
     });
   }
 
-  handleSuccessfulAuth(data) {
-    this.props.handleLogin(data);
-    this.props.history.push("/dashboard");
-  }
-
   render() {
     return (
       <div>
+        <h1>This is the Login page</h1>
+        <h1>Status: {this.props.loggedInStatus}</h1>
         <form onSubmit={this.handleSubmit}>
           <input
             type="email"

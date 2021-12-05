@@ -10,7 +10,7 @@ class Navbar extends Component {
   }
 
   handleLogoutClick() {
-    axios.delete("http://localhost:3001/logout",
+    axios.delete(`${this.props.URL}/logout`,
       { withCredentials: true }
     ).then(response => {
       this.props.handleLogout()
