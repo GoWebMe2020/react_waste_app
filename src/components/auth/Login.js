@@ -5,8 +5,6 @@ const Login = (props) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginErrors, setLoginErrors] = useState("");
-  const [registrationErrors, setRegistrationErrors] = useState("");
 
   const handleSubmit = (event) => {
     axios.post(`${props.URL}/sessions`, {
@@ -19,13 +17,14 @@ const Login = (props) => {
     ).then(response => {
       if (response.data.logged_in) {
         props.handleSuccessfulAuth(response.data);
+      } else {
+        props.handleUnsuccessfulAuth(response.data.message);
       }
     }).catch(error => {
-      console.log("Login Error", error);
+      console.log(error)
     })
     event.preventDefault()
   }
-
   const handleEmailChange = (event) => {
     setEmail(event.target.value)
   }

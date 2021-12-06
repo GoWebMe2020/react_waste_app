@@ -13,6 +13,7 @@ const App = () => {
   const [loggedInStatus, setLoggedInStatus] = useState("NOT_LOGGED_IN")
   const [user, setUser] = useState({})
   const URL = "http://localhost:3001"
+  const [message, setMessage] = useState()
 
   const handleLogin = (data) => {
     setLoggedInStatus("LOGGED_IN")
@@ -20,12 +21,19 @@ const App = () => {
   }
 
   const handleSuccessfulAuth = (data) => {
+    const message = data.message
     handleLogin(data)
+    displayMessage(message)
   }
 
-  const handleLogout = () => {
+  const handleUnsuccessfulAuth = (stringMessage) => {
+    displayMessage(stringMessage)
+  }
+
+  const handleLogout = (data) => {
     setLoggedInStatus("NOT_LOGGED_IN")
     setUser({})
+    displayMessage(data.message)
   }
 
   const checkLoginStatus = () => {
@@ -35,7 +43,7 @@ const App = () => {
       if (response.data.logged_in && loggedInStatus === "NOT_LOGGED_IN") {
         setLoggedInStatus("LOGGED_IN")
         setUser(response.data.user)
-      } else if (!response.data.logged_in && this.state.loggedInStatus === "LOGGED_IN") {
+      } else if (!response.data.logged_in && loggedInStatus === "LOGGED_IN") {
         setLoggedInStatus("NOT_LOGGED_IN")
         setUser({})
       }
@@ -44,7 +52,17 @@ const App = () => {
     })
   }
 
-  checkLoginStatus()
+  const displayMessage = (message) => {
+    setMessage(message)
+    setTimeout(() => {
+      setMessage()
+    }, 10000);
+  }
+
+  useEffect(() => {
+    checkLoginStatus()
+  }, [])
+
 
   return (
     <div className='app'>
@@ -54,7 +72,7 @@ const App = () => {
             handleLogout={handleLogout}
             URL={URL}
           />
-          <Message />
+          <Message message={message} />
           <Switch>
             <Route
               exact path={"/dashboard"}
@@ -72,6 +90,7 @@ const App = () => {
                 <Login
                   {... props}
                   handleSuccessfulAuth={handleSuccessfulAuth}
+                  handleUnsuccessfulAuth={handleUnsuccessfulAuth}
                   loggedInStatus={loggedInStatus}
                   URL={URL}
                 />
@@ -83,6 +102,7 @@ const App = () => {
                 <Register
                   {... props}
                   handleSuccessfulAuth={handleSuccessfulAuth}
+                  handleUnsuccessfulAuth={handleUnsuccessfulAuth}
                   loggedInStatus={loggedInStatus}
                   URL={URL}
                 />

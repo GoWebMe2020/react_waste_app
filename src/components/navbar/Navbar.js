@@ -8,7 +8,7 @@ const Navbar = (props) => {
     axios.delete(`${props.URL}/logout`,
       { withCredentials: true }
     ).then(response => {
-      props.handleLogout()
+      props.handleLogout(response.data)
     }).catch(error => {
       console.log("Logout Error", error)
     })

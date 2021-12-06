@@ -6,7 +6,6 @@ const Registration = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [registrationErrors, setRegistrationErrors] = useState("");
 
   const handleSubmit = (event) => {
     axios.post(`${props.URL}/registrations`, {
@@ -22,9 +21,20 @@ const Registration = (props) => {
         props.handleSuccessfulAuth(response.data);
       }
     }).catch(error => {
-      console.log("Login Error", error);
+      if (error) {
+        handleErrorMessage()
+        console.log("ERROR = ", error)
+      }
     })
     event.preventDefault()
+  }
+
+  const handleErrorMessage = () => {
+    if (password != passwordConfirmation) {
+      props.handleUnsuccessfulAuth("Your password and password confirmation must match");
+    } else {
+      props.handleUnsuccessfulAuth("Something went wrong. Your password/username is incorrect, or this you have not yet registered. Please try again or sign up.");
+    }
   }
 
   const handleEmailChange = (event) => {
@@ -41,6 +51,8 @@ const Registration = (props) => {
 
   return (
     <div>
+        <h1>This is the Login page</h1>
+        <h1>Status: {props.loggedInStatus}</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="email"
