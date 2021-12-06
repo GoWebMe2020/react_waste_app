@@ -1,84 +1,75 @@
-import React, { Component } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react'
 
-class Registration extends Component {
-  constructor(props) {
-    super(props);
+const Registration = (props) => {
 
-    this.state = {
-      email: "",
-      password: "",
-      password_confirmation: "",
-      registrationErrors: ""
-    }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [registrationErrors, setRegistrationErrors] = useState("");
 
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleSubmit(event) {
-    const {
-      email,
-      password,
-      password_confirmation
-    } = this.state;
-    axios.post(`${this.props.URL}/registrations`, {
+  const handleSubmit = (event) => {
+    axios.post(`${props.URL}/registrations`, {
       user: {
         email: email,
         password: password,
-        password_confirmation: password_confirmation
+        password_confirmation: passwordConfirmation
       }
     },
       { withCredentials: true }
     ).then(response => {
-      if (response.data.status === "created") {
-        this.props.handleSuccessfulAuth(response.data);
+      if (response.data.logged_in) {
+        props.handleSuccessfulAuth(response.data);
       }
     }).catch(error => {
-      console.log("Registration Error", error);
+      console.log("Login Error", error);
     })
     event.preventDefault()
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
   }
 
-  render() {
-    return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
+  const handlePasswordChange = (event) => {
+      setPassword(event.target.value)
+  }
+
+  const handlePasswordConfirmationChange = (event) => {
+    setPasswordConfirmation(event.target.value)
+  }
+
+  return (
+    <div>
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             name="email"
             placeholder="Email"
-            value={this.state.email}
-            onChange={this.handleChange}
+            value={email}
+            onChange={handleEmailChange}
             required
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
+            value={password}
+            onChange={handlePasswordChange}
             required
           />
           <input
             type="password"
-            name="password_confirmation"
+            name="passwordConfirmation"
             placeholder="Password Confirmation"
-            value={this.state.password_confirmation}
-            onChange={this.handleChange}
+            value={passwordConfirmation}
+            onChange={handlePasswordConfirmationChange}
             required
           />
           <button type="submit">Register</button>
         </form>
       </div>
-    );
-  }
+  );
 }
 
 export default Registration;

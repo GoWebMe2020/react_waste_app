@@ -1,22 +1,14 @@
-import React, { Component } from 'react';
-import Login from './auth/Login';
-import Registration from './auth/Registration';
+import React from 'react';
 
-class Home extends Component {
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-    return (
+const Home = (props) => {
+  return (
+    <div>
       <div>
         <h1>This is the HOME page</h1>
-        <h1>Status: {this.props.loggedInStatus}</h1>
-        <Registration handleSuccessfulAuth={this.handleSuccessfulAuth} />
+        <h1>Status: {props.loggedInStatus}</h1>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Home;
-

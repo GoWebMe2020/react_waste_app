@@ -1,37 +1,30 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
 
-class Navbar extends Component {
-  constructor(props) {
-    super(props)
+const Navbar = (props) => {
 
-    this.handleLogoutClick = this.handleLogoutClick.bind(this)
-  }
-
-  handleLogoutClick() {
-    axios.delete(`${this.props.URL}/logout`,
+  const handleLogoutClick = () => {
+    axios.delete(`${props.URL}/logout`,
       { withCredentials: true }
     ).then(response => {
-      this.props.handleLogout()
+      props.handleLogout()
     }).catch(error => {
       console.log("Logout Error", error)
     })
   }
 
-  render() {
-    return (
-      <div>
+  return (
+    <div>
       <ul>
         <li><Link to='/'>Home</Link></li>
         <li><Link to='/dashboard'>Dashboard</Link></li>
         <li><Link to='/login'>Login</Link></li>
         <li><Link to='/register'>Register</Link></li>
-        <button onClick={() => this.handleLogoutClick()}>Logout</button>
+        <button onClick={() => handleLogoutClick()}>Logout</button>
       </ul>
     </div>
-    )
-  }
+  );
 }
 
 export default Navbar;

@@ -1,27 +1,15 @@
-import React, { Component } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react'
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
+const Login = (props) => {
 
-    this.state = {
-      email: "",
-      password: "",
-      loginErrors: "",
-      registrationErrors: ""
-    }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginErrors, setLoginErrors] = useState("");
+  const [registrationErrors, setRegistrationErrors] = useState("");
 
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleSubmit(event) {
-    const {
-      email,
-      password
-    } = this.state;
-    axios.post(`${this.props.URL}/sessions`, {
+  const handleSubmit = (event) => {
+    axios.post(`${props.URL}/sessions`, {
       user: {
         email: email,
         password: password
@@ -30,7 +18,7 @@ class Login extends Component {
       { withCredentials: true }
     ).then(response => {
       if (response.data.logged_in) {
-        this.props.handleSuccessfulAuth(response.data);
+        props.handleSuccessfulAuth(response.data);
       }
     }).catch(error => {
       console.log("Login Error", error);
@@ -38,39 +26,39 @@ class Login extends Component {
     event.preventDefault()
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
   }
 
-  render() {
-    return (
-      <div>
+  const handlePasswordChange = (event) => {
+      setPassword(event.target.value)
+  }
+
+  return (
+    <div>
         <h1>This is the Login page</h1>
-        <h1>Status: {this.props.loggedInStatus}</h1>
-        <form onSubmit={this.handleSubmit}>
+        <h1>Status: {props.loggedInStatus}</h1>
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             name="email"
             placeholder="Email"
-            value={this.state.email}
-            onChange={this.handleChange}
+            value={email}
+            onChange={handleEmailChange}
             required
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
+            value={password}
+            onChange={handlePasswordChange}
             required
           />
           <button type="submit">Login</button>
         </form>
       </div>
-    );
-  }
+  );
 }
 
 export default Login;

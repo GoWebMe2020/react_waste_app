@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import axios from 'axios'
 import Dashboard from './Dashboard';
@@ -6,87 +6,63 @@ import Home from './Home';
 import Navbar from './navbar/Navbar'
 import Login from './auth/Login';
 import Register from './auth/Registration';
+import Message from './notices/Message';
 
-export default class App extends Component {
-  constructor() {
-    super();
+const App = () => {
 
-    this.state = {
-      loggedInStatus: "NOT_LOGGED_IN",
-      user: {}
-    }
+  const [loggedInStatus, setLoggedInStatus] = useState("NOT_LOGGED_IN")
+  const [user, setUser] = useState({})
+  const URL = "http://localhost:3001"
 
-    this.URL = "http://localhost:3001"
-
-    this.handleLogin = this.handleLogin.bind(this)
-    this.handleLogout = this.handleLogout.bind(this)
-    this.handleSuccessfulAuth = this.handleSuccessfulAuth.bind(this);
+  const handleLogin = (data) => {
+    setLoggedInStatus("LOGGED_IN")
+    setUser(data.user)
   }
 
-  componentDidMount() {
-    this.checkLoginStatus()
+  const handleSuccessfulAuth = (data) => {
+    handleLogin(data)
   }
 
-  handleLogin(data) {
-    this.setState({
-      loggedInStatus: "LOGGED_IN",
-      user: data.user
-    })
+  const handleLogout = () => {
+    setLoggedInStatus("NOT_LOGGED_IN")
+    setUser({})
   }
 
-  handleSuccessfulAuth(data) {
-    this.handleLogin(data);
-    console.log(this.state.user)
-    if (this.state.loggedInStatus === "LOGGED_IN" && this.state.user) {
-      window.location.pathname = '/dashboard'
-    } else {
-      window.location.pathname = '/login'
-    }
-  }
-
-  handleLogout() {
-    this.setState({
-      loggedInStatus: "NOT_LOGGED_IN",
-      user: {}
-    })
-  }
-
-  checkLoginStatus() {
+  const checkLoginStatus = () => {
     axios.get("http://localhost:3001/logged_in",
       { withCredentials: true }
     ).then(response => {
-      if (response.data.logged_in && this.state.loggedInStatus === "NOT_LOGGED_IN") {
-        this.setState({
-          loggedInStatus: "LOGGED_IN",
-          user: response.data.user
-        })
+      if (response.data.logged_in && loggedInStatus === "NOT_LOGGED_IN") {
+        setLoggedInStatus("LOGGED_IN")
+        setUser(response.data.user)
       } else if (!response.data.logged_in && this.state.loggedInStatus === "LOGGED_IN") {
-        this.setState({
-          loggedInStatus: "NOT_LOGGED_IN",
-          user: {}
-        })
+        setLoggedInStatus("NOT_LOGGED_IN")
+        setUser({})
       }
-    }).catch( error => {
-      console.log("Check Login Error ", error)
+    }).catch(error => {
+      console.log("Check Login Error", error)
     })
   }
 
-  render() {
-    return (
-      <div className='app'>
-        <Router>
+  checkLoginStatus()
+
+  return (
+    <div className='app'>
+      <Router>
+          <h1>This is the {user.email}</h1>
           <Navbar
-            handleLogout={this.handleLogout}
-            URL={this.URL}
+            handleLogout={handleLogout}
+            URL={URL}
           />
+          <Message />
           <Switch>
             <Route
               exact path={"/dashboard"}
               render={props => (
                 <Dashboard
                   {... props}
-                    loggedInStatus={this.state.loggedInStatus}
-                    URL={this.URL}
+                    loggedInStatus={loggedInStatus}
+                    URL={URL}
                 />
               )}
             />
@@ -95,9 +71,9 @@ export default class App extends Component {
               render={props => (
                 <Login
                   {... props}
-                  handleSuccessfulAuth={this.handleSuccessfulAuth}
-                  loggedInStatus={this.state.loggedInStatus}
-                  URL={this.URL}
+                  handleSuccessfulAuth={handleSuccessfulAuth}
+                  loggedInStatus={loggedInStatus}
+                  URL={URL}
                 />
               )}
             />
@@ -106,9 +82,9 @@ export default class App extends Component {
               render={props => (
                 <Register
                   {... props}
-                  handleSuccessfulAuth={this.handleSuccessfulAuth}
-                  loggedInStatus={this.state.loggedInStatus}
-                  URL={this.URL}
+                  handleSuccessfulAuth={handleSuccessfulAuth}
+                  loggedInStatus={loggedInStatus}
+                  URL={URL}
                 />
               )}
             />
@@ -117,14 +93,15 @@ export default class App extends Component {
               render={props => (
                 <Home
                   {... props}
-                  handleLogin={this.handleLogin}
-                  loggedInStatus={this.state.loggedInStatus}
+                  handleLogin={handleLogin}
+                  loggedInStatus={loggedInStatus}
                 />
               )}
             />
           </Switch>
         </Router>
-      </div>
-    );
-  }
+    </div>
+  )
 }
+
+export default App
